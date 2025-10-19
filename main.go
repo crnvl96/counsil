@@ -24,10 +24,6 @@ var MISE_TOOLS = []string{
 	"prettier@latest",
 }
 
-var YAY_TOOLS = []string{
-	"calibre-bin",
-}
-
 var UV_TOOLS = []string{
 	"pyright@latest",
 }
@@ -51,11 +47,6 @@ func installMise() error {
 func installMiseTool(t string) error {
 	home, _ := os.UserHomeDir()
 	cmd := exec.Command("mise", "use", "--cd", home, "--force", "--pin", t)
-	return cmd.Run()
-}
-
-func installYayTool(t string) error {
-	cmd := exec.Command("yay", "--sudoloop", "-Sy", "--needed", "--noconfirm", t)
 	return cmd.Run()
 }
 
@@ -107,7 +98,6 @@ func main() {
 			}
 
 			syncTools(MISE_TOOLS, installMiseTool)
-			syncTools(YAY_TOOLS, installYayTool)
 			syncTools(UV_TOOLS, installUvTool)
 			syncTools(NPM_TOOLS, installNpmTool)
 			syncTools(GO_TOOLS, installGoTool)
