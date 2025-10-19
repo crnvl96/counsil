@@ -19,22 +19,26 @@ var MISE_TOOLS = []string{
 	"lua-language-server@3.15.0",
 	"python@3.14.0",
 	"gofumpt@0.9.1",
+	"opencode@0.15.8",
+	"bob@4.1.4",
+	"ruff@0.14.1",
 }
 
 var YAY_TOOLS = []string{
 	"calibre-bin",
-	"opencode-bin",
-	"bob",
 }
 
 var UV_TOOLS = []string{
 	"pyright",
-	"ruff",
 }
 
 var NPM_TOOLS = []string{
 	"vscode-langservers-extracted@latest",
 	"typescript-language-server@latest",
+}
+
+var GO_TOOLS = []string{
+	"golang.org/x/tools/gopls@latest",
 }
 
 func installMiseTool(t string) error {
@@ -54,7 +58,12 @@ func installUvTool(t string) error {
 }
 
 func installNpmTool(t string) error {
-	cmd := exec.Command("npm", "i", "-g", t)
+	cmd := exec.Command("npm", "i", "-g", t+"@latest")
+	return cmd.Run()
+}
+
+func installGoTool(t string) error {
+	cmd := exec.Command("go", "install", t)
 	return cmd.Run()
 }
 
@@ -90,6 +99,7 @@ func main() {
 			syncTools(YAY_TOOLS, installYayTool)
 			syncTools(UV_TOOLS, installUvTool)
 			syncTools(NPM_TOOLS, installNpmTool)
+			syncTools(GO_TOOLS, installGoTool)
 		},
 	}
 
