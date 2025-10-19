@@ -27,6 +27,16 @@ var YAY_TOOLS = []string{
 	"bob",
 }
 
+var UV_TOOLS = []string{
+	"pyright",
+	"ruff",
+}
+
+var NPM_TOOLS = []string{
+	"vscode-langservers-extracted@latest",
+	"typescript-language-server@latest",
+}
+
 func installMiseTool(t string) error {
 	home, _ := os.UserHomeDir()
 	cmd := exec.Command("mise", "use", "--cd", home, "--force", "--pin", t)
@@ -38,36 +48,28 @@ func installYayTool(t string) error {
 	return cmd.Run()
 }
 
-func syncMiseTools() {
-	var wg sync.WaitGroup
-	sem := make(chan struct{}, 10)
-	for _, t := range MISE_TOOLS {
-		wg.Add(1)
-		go func(tool string) {
-			defer wg.Done()
-			sem <- struct{}{}
-			fmt.Printf("Starting install for %s\n", tool)
-			if err := installMiseTool(tool); err != nil {
-				fmt.Printf("Error installing %s: %v\n", tool, err)
-			} else {
-				fmt.Printf("Successfully installed %s\n", tool)
-			}
-			<-sem
-		}(t)
-	}
-	wg.Wait()
+func installUvTool(t string) error {
+	cmd := exec.Command("uv", "tool", "install", "--upgrade", t)
+	return cmd.Run()
 }
 
-func syncYayTools() {
+func installNpmTool(t string) error {
+	cmd := exec.Command("npm", "i", "-g", t)
+	return cmd.Run()
+}
+
+type InstallFunc func(string) error
+
+func syncTools(tools []string, install InstallFunc) {
 	var wg sync.WaitGroup
 	sem := make(chan struct{}, 10)
-	for _, t := range YAY_TOOLS {
+	for _, t := range tools {
 		wg.Add(1)
 		go func(tool string) {
 			defer wg.Done()
 			sem <- struct{}{}
 			fmt.Printf("Starting install for %s\n", tool)
-			if err := installYayTool(tool); err != nil {
+			if err := install(tool); err != nil {
 				fmt.Printf("Error installing %s: %v\n", tool, err)
 			} else {
 				fmt.Printf("Successfully installed %s\n", tool)
@@ -84,8 +86,10 @@ func main() {
 		Short: "Counsil CLI tool",
 		Long:  `A CLI tool for managing development tools.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			syncMiseTools()
-			syncYayTools()
+			syncTools(MISE_TOOLS, installMiseTool)
+			syncTools(YAY_TOOLS, installYayTool)
+			syncTools(UV_TOOLS, installUvTool)
+			syncTools(NPM_TOOLS, installNpmTool)
 		},
 	}
 
