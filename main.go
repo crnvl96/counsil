@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 	"sync"
 
 	"github.com/spf13/cobra"
@@ -30,18 +29,19 @@ func installMiseTool(t string) error {
 
 func syncMiseTools() {
 	var wg sync.WaitGroup
-	sem := make(chan struct{}, 5) // limit to 5 concurrent installs
+	sem := make(chan struct{}, 10)
 	for _, t := range MISE_TOOLS {
 		wg.Add(1)
 		go func(tool string) {
 			defer wg.Done()
-			sem <- struct{}{}        // acquire semaphore
-			defer func() { <-sem }() // release
+			sem <- struct{}{}
+			fmt.Printf("Starting install for %s\n", tool)
 			if err := installMiseTool(tool); err != nil {
 				fmt.Printf("Error installing %s: %v\n", tool, err)
 			} else {
 				fmt.Printf("Successfully installed %s\n", tool)
 			}
+			<-sem
 		}(t)
 	}
 	wg.Wait()
