@@ -8,6 +8,12 @@ Counsil installs essential development tools using various package managers (mis
 
 ## Installation
 
+### Via Curl
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/crnvl96/counsil/main/install.sh | sh
+```
+
 ### Using Go
 
 ```bash
