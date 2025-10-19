@@ -10,18 +10,18 @@ import (
 )
 
 var MISE_TOOLS = []string{
-	"node@24.9.0",
-	"go@1.25.3",
-	"rust@1.90.0",
-	"uv@0.9.4",
-	"stylua@2.3.0",
-	"prettier@3.6.2",
-	"lua-language-server@3.15.0",
-	"python@3.14.0",
-	"gofumpt@0.9.1",
-	"opencode@0.15.8",
-	"bob@4.1.4",
-	"ruff@0.14.1",
+	"node@latest",
+	"go@latest",
+	"rust@latest",
+	"uv@latest",
+	"stylua@latest",
+	"lua-language-server@latest",
+	"python@latest",
+	"gofumpt@latest",
+	"opencode@latest",
+	"bob@latest",
+	"ruff@latest",
+	"prettier@latest",
 }
 
 var YAY_TOOLS = []string{
@@ -29,7 +29,7 @@ var YAY_TOOLS = []string{
 }
 
 var UV_TOOLS = []string{
-	"pyright",
+	"pyright@latest",
 }
 
 var NPM_TOOLS = []string{
@@ -39,6 +39,11 @@ var NPM_TOOLS = []string{
 
 var GO_TOOLS = []string{
 	"golang.org/x/tools/gopls@latest",
+}
+
+func installMise() error {
+	cmd := exec.Command("sh", "-c", "curl https://mise.run/bash | sh")
+	return cmd.Run()
 }
 
 func installMiseTool(t string) error {
@@ -58,7 +63,7 @@ func installUvTool(t string) error {
 }
 
 func installNpmTool(t string) error {
-	cmd := exec.Command("npm", "i", "-g", t+"@latest")
+	cmd := exec.Command("npm", "i", "-g", t)
 	return cmd.Run()
 }
 
@@ -95,6 +100,10 @@ func main() {
 		Short: "Counsil CLI tool",
 		Long:  `A CLI tool for managing development tools.`,
 		Run: func(cmd *cobra.Command, args []string) {
+			if err := installMise(); err != nil {
+				fmt.Printf("Error installing mise: %v\n", err)
+			}
+
 			syncTools(MISE_TOOLS, installMiseTool)
 			syncTools(YAY_TOOLS, installYayTool)
 			syncTools(UV_TOOLS, installUvTool)
