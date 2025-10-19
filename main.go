@@ -40,7 +40,6 @@ var NPM_TOOLS = []string{
 var GO_TOOLS = []string{
 	"golang.org/x/tools/gopls@latest",
 	// personal tools
-	"github.com/crnvl96/counsil@latest",
 	"github.com/crnvl96/dirt@latest",
 }
 
