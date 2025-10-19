@@ -21,9 +21,20 @@ var MISE_TOOLS = []string{
 	"gofumpt@0.9.1",
 }
 
+var YAY_TOOLS = []string{
+	"calibre-bin",
+	"opencode-bin",
+	"bob",
+}
+
 func installMiseTool(t string) error {
 	home, _ := os.UserHomeDir()
 	cmd := exec.Command("mise", "use", "--cd", home, "--force", "--pin", t)
+	return cmd.Run()
+}
+
+func installYayTool(t string) error {
+	cmd := exec.Command("yay", "--sudoloop", "-Sy", "--needed", "--noconfirm", t)
 	return cmd.Run()
 }
 
@@ -47,6 +58,26 @@ func syncMiseTools() {
 	wg.Wait()
 }
 
+func syncYayTools() {
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, 10)
+	for _, t := range YAY_TOOLS {
+		wg.Add(1)
+		go func(tool string) {
+			defer wg.Done()
+			sem <- struct{}{}
+			fmt.Printf("Starting install for %s\n", tool)
+			if err := installYayTool(tool); err != nil {
+				fmt.Printf("Error installing %s: %v\n", tool, err)
+			} else {
+				fmt.Printf("Successfully installed %s\n", tool)
+			}
+			<-sem
+		}(t)
+	}
+	wg.Wait()
+}
+
 func main() {
 	rootCmd := &cobra.Command{
 		Use:   "counsil",
@@ -54,6 +85,7 @@ func main() {
 		Long:  `A CLI tool for managing development tools.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			syncMiseTools()
+			syncYayTools()
 		},
 	}
 
