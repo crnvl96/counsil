@@ -21,7 +21,6 @@ var MISE_TOOLS = []string{
 	"opencode@latest",
 	"bob@latest",
 	"ruff@latest",
-	"prettier@latest",
 }
 
 var UV_TOOLS = []string{
@@ -31,6 +30,7 @@ var UV_TOOLS = []string{
 var NPM_TOOLS = []string{
 	"vscode-langservers-extracted@latest",
 	"typescript-language-server@latest",
+	"prettier@latest",
 }
 
 var GO_TOOLS = []string{
